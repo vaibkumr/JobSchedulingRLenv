@@ -1,22 +1,5 @@
-# DQN observations:
-- For 3,3,3 with 600 episodes and 200 long memory:
-  In an experiment performed 500 times:
-    - 62 times DQN was better than SJF
-    - 134 times it was equally as good as SJF
-    - 304 times it was worse
-- 5,5,5 after 6k episodes and 200 long memory hardly ever performs better than SJF. It needs parameter tweaking and more training.
-    - Maybe increase the learning ratE?
-    - Definitely increase the memory from 200 to something like 2-3k
-
-# DQN update
-- DQN.ipynb is the main notebook
-- Takes very long to train. Reminder: try using autojit
-- model contains the trained Net
-- eval_net.m and train_net.m are trained on 3,3,3 for 6k episodes (32 batch size, 200 memory only)
-- eval_name and train_name are trained on 5,5,5 for 60k episodes (32 batch size, 200 memory only, increase it?)
-
-
 # Job scheduler environment for RL
+I have tried writing this environment to be as compatible as possible with gym environments. 
 Simulate a job scheduling environment without preemption and two job instance types with variable amount of resource instances, job numbers and max job time.
 
 HOWTO (test):
