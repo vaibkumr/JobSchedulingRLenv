@@ -124,16 +124,3 @@ class Jobs():
                         tablefmt='psql')
                         )
         print(f"# EMPTY JOBS: {empty_counter} \n# JOBS IN BACKLOG: {sum(list(self.backlog.values()))}")
-
-
-def main():
-    max_time = 5
-    n = 5
-    max_resource = 4
-    a = Jobs(n, max_time, max_resource)
-    x = a.getState()
-    print(x)
-
-
-if __name__ == "__main__":
-    main()

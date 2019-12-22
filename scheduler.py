@@ -4,7 +4,7 @@ from tabulate import tabulate
 from state_generate import Jobs
 from render_image import Render
 import copy
-
+import gym
 
 
 def cut_matrix(matrix, mr, mt):
@@ -50,26 +50,21 @@ def make_job(time, rows, columns):
     matrix2.iloc[0:time, 0:r2] = time
     return matrix1, matrix2
 
-class scheduler:
-    def __init__(self):
+class Scheduler(gym.Env):
+    def __init__(self, n, mt, mr):
         """
         Simulate a job scheduling environment without preemption and two job
         instance types with variable amount of resource instances, job numbers
         and max job time.
-        """
-        self.state = 'INVALID' #Call make() to make an environment
-        self.action_sequence = [] #No actions taken yet
-        self.invalid_action_reward = -30
-        self.valid_action_reward = 0
-
-    def make(self, n, mt, mr):
-        """
         @param n number of jobs
         @param mt max burst time
         @param mr max resource instance requirement
-        @color if True then every new job has different color for image rendering
         There are two resources
         """
+        self.state = 'INVALID' #Call make() to make an environment
+        self.action_sequence = [] #No actions taken yet
+        self.invalid_action_reward = -100
+        self.valid_action_reward = 0 #Try changing this
         self.n = n
         self.mt = mt
         self.mr = mr
@@ -143,8 +138,10 @@ class scheduler:
         return r1, r2
 
     def fill_matrix(self, r1, r2, time, d1, d2):
-        """fills the resource matrices r1 and r2 with the job having time: time
-        and resource requirement d1 and d2"""
+        """
+        fills the resource matrices r1 and r2 with the job having time: time
+        and resource requirement d1 and d2
+        """
         symbol = self.symbol[time-1]
         l1 = [] #l1 is the list containing the number of empty boxes in each row
         l2 = [] #l2 is the list containing the number of empty boxes in each row
@@ -172,6 +169,7 @@ class scheduler:
         return r1, r2
 
     def sjf(self, save_state = True):
+
         if save_state:
             saved_state = copy.deepcopy(self.state)
         done = False
@@ -227,7 +225,6 @@ class scheduler:
     def calculate_reward(self):
         """calculate reward helper function"""
         if type(self.state) is str:
-            print("FUCKER CAME HERE SONAVABITCH")
             return -1
         m1 = self.state['resource1']
         m2 = self.state['resource2']
@@ -258,18 +255,24 @@ class scheduler:
         self.action_sequence.append(action)
         reward = self.sched_job(action)
         environment = self.state
-        infor = self.action_sequence
+        info = self.action_sequence
         flat_state = self.collect_matrices()
-        return flat_state, reward, self.done, infor
+        return flat_state, reward, self.done, info
 
-    def render(self):
-        """Displays the current state as colored image file 'state.png'"""
-        if self.state == "INVALID":
+    def render(self, terminal=True):
+        """
+        @terminal if True then prints the state on terminal else,
+        displays the current state as colored image file 'state.png'
+        """
+        if terminal:
+            self.render_terminal()
+        elif self.state == "INVALID":
             print("invalid action")
             print("DONE")
             Render(self.state, self.n).render_invalid()
             return
-        Render(self.state, self.n).render()
+        else:
+            Render(self.state, self.n).render()
 
     def get_observation_space(self):
         some_state = self.generate_start_state()
@@ -335,35 +338,3 @@ class scheduler:
             print("DONE")
         else:
             print("NOT DONE")
-
-
-# def main():
-#     """main driver function"""
-#     env = scheduler()
-#     n, mt, mr = 5, 3, 4
-#     # env.make(n, mt, mr)
-#     # env.render()
-#     # some_random_action = env.sample()
-#     # env.step(some_random_action)
-#     # env.render()
-#     env.make(n, mt, mr)
-#     episode = 0
-#     while(True):
-#         done = False
-#         env.make(n, mt, mr)
-#         i = 0
-#         while not done:
-#             some_random_action = env.sample()
-#             print(f"Taking action:{some_random_action}")
-#             _, reward, done, _ = env.step(some_random_action)
-#             # env.render_terminal()
-#             m = env.collect_matrices()
-#             # print(m)
-#             # print(m.shape)
-#             i = i+1
-#             print(f"Step {i} | Reward: {reward}")
-#         print(f"episode {episode}")
-#         episode += 1
-
-# if __name__ == "__main__":
-#     main()

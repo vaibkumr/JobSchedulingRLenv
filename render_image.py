@@ -3,6 +3,9 @@ import pandas as pd
 import numpy as np
 from matplotlib.pyplot import figure
 
+DPI = 30
+FIGSIZE = (8, 10)
+FILENAME = 'state.png'
 CMAP = {
         "0" : "w",
         "0.0" : "w",
@@ -47,7 +50,6 @@ def get_colors(matrices):
     global CMAP
     cs = []
     for m in matrices:
-        # print("SHAPE: ", m.shape)
         cs.append(np.array(m.applymap(lambda x: CMAP[str(x)])))
     return cs
 
@@ -58,8 +60,8 @@ class Render():
         self.state = state
 
     def render_invalid(self):
-        figure(num=None, figsize=(8, 10), dpi=30)
-        plt.savefig('state.png', bbox_inches='tight')
+        figure(num=None, figsize=FIGSIZE, dpi=DPI)
+        plt.savefig(FILENAME, bbox_inches='tight')
         plt.close()
 
     def render(self):
@@ -69,7 +71,7 @@ class Render():
         columns = len(state.keys())
         plot_matrix = (rows, columns)
         i = 2
-        figure(num=None, figsize=(8, 10), dpi=30)
+        figure(num=None, figsize=FIGSIZE, dpi=DPI)
         for key in state.keys():
             if key == 'resource1':
                 colors = get_colors([state[key]])[0]
@@ -87,7 +89,7 @@ class Render():
                 self.plot([[2, columns, i], [2, columns, columns+i]], [colors1, colors2])
                 i += 1
         # plt.show()
-        plt.savefig('state.png', bbox_inches='tight')
+        plt.savefig(FILENAME, bbox_inches='tight')
         plt.close()
 
     def plot(self, locations, colors):
